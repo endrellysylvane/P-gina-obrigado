@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compra Confirmada</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #faf7f2;
+    color: #2c2419;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .bg-orbs {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    overflow: hidden;
+  }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.18;
+  }
+  .orb-1 { width: 500px; height: 500px; background: #c4a882; top: -100px; right: -100px; }
+  .orb-2 { width: 400px; height: 400px; background: #8fad8a; bottom: 100px; left: -80px; }
+  .orb-3 { width: 300px; height: 300px; background: #d4b896; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  .wrapper {
+    position: relative; z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+  }
+
+  .confirmed-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #e8f0e6;
+    color: #3a6b35;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+    animation: fadeDown 0.6s ease both;
+  }
+  .confirmed-badge .dot {
+    width: 7px; height: 7px;
+    background: #4a8f42;
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 6vw, 56px);
+    font-weight: 300;
+    line-height: 1.15;
+    color: #1e1710;
+    margin-bottom: 20px;
+    animation: fadeDown 0.6s 0.1s ease both;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: #8a6a3a;
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    color: #5a4d3a;
+    line-height: 1.7;
+    max-width: 520px;
+    margin-bottom: 12px;
+    animation: fadeDown 0.6s 0.2s ease both;
+  }
+
+  .email-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #fff8ee;
+    border: 1px solid #e8d8b8;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 14px;
+    color: #6b5030;
+    line-height: 1.5;
+    margin-top: 20px;
+    margin-bottom: 56px;
+    animation: fadeDown 0.6s 0.3s ease both;
+  }
+  .email-note .icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 40px;
+    animation: fadeDown 0.6s 0.35s ease both;
+  }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, #c9b89a, transparent); }
+  .divider-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: #9a876a;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+
+  .upsell-card {
+    background: #ffffff;
+    border: 1px solid #e4d8c8;
+    border-radius: 20px;
+    overflow: hidden;
+    animation: fadeUp 0.7s 0.4s ease both;
+    box-shadow: 0 4px 40px rgba(160,130,90,0.08);
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, #2c1f0e 0%, #4a3420 50%, #3a2a15 100%);
+    padding: 40px 40px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3Ccircle cx='30' cy='30' r='10'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .card-header .crystal-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+    filter: drop-shadow(0 2px 8px rgba(255,200,100,0.3));
+  }
+  .card-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 4vw, 38px);
+    font-weight: 300;
+    color: #f5e6c8;
+    line-height: 1.2;
+    position: relative;
+    margin-bottom: 10px;
+  }
+  .card-header p {
+    font-size: 15px;
+    color: #c4a87a;
+    line-height: 1.6;
+    position: relative;
+    max-width: 400px;
+  }
+
+  .card-body {
+    padding: 36px 40px 40px;
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .benefit-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px;
+    background: #faf6f0;
+    border: 1px solid #ede3d4;
+    border-radius: 12px;
+  }
+  .benefit-check {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #e8f0e6;
+    border: 1px solid #b8d4b4;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .benefit-check svg { width: 10px; height: 10px; }
+  .benefit-text {
+    font-size: 14px;
+    color: #3d3020;
+    line-height: 1.45;
+    font-weight: 400;
+  }
+
+  .price-area {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .offer-label {
+    display: inline-block;
+    background: #fff3dc;
+    color: #8a5e0a;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 100px;
+    border: 1px solid #f0d898;
+    margin-bottom: 16px;
+  }
+
+  .cta-button {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, #2c1f0e, #5a3e1e);
+    color: #f5e8cc;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-align: center;
+    padding: 18px 32px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 6px 24px rgba(44, 31, 14, 0.28);
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-button::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.07));
+  }
+  .cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(44, 31, 14, 0.36);
+  }
+  .cta-button:active { transform: translateY(0); }
+  .cta-button span { position: relative; z-index: 1; }
+
+  .attention-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 12px 16px;
+    background: #fef9f0;
+    border-left: 3px solid #d4a84a;
+    border-radius: 0 8px 8px 0;
+    font-size: 13px;
+    color: #6b5030;
+    line-height: 1.55;
+  }
+  .attention-note strong { color: #4a3015; }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  @media (max-width: 520px) {
+    .card-header, .card-body { padding: 28px 24px; }
+    .benefits-grid { grid-template-columns: 1fr; }
+    .wrapper { padding: 40px 16px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="wrapper">
+
+  <div class="confirmed-badge">
+    <div class="dot"></div>
+    Pagamento aprovado
+  </div>
+
+  <h1 class="hero-title">Compra <em>confirmada</em><br>com sucesso.</h1>
+
+  <p class="hero-sub">Seu acesso ao <strong>Segredo da Auto Cura Holística</strong> foi enviado para o e-mail cadastrado na compra.</p>
+
+  <div class="email-note">
+    <span class="icon">📩</span>
+    <span>Verifique também as pastas <strong>Spam</strong>, <strong>Promoções</strong> e <strong>Lixeira</strong> caso não encontre o e-mail na caixa de entrada.</span>
+  </div>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <span class="divider-text">Uma oportunidade especial para complementar seus estudos</span>
+    <div class="divider-line"></div>
+  </div>
+
+  <div class="upsell-card">
+    <div class="card-header">
+      <span class="crystal-icon">🔮</span>
+      <h2>Cristaloterapia</h2>
+      <p>Aprenda sobre as propriedades energéticas dos cristais, suas aplicações no equilíbrio emocional, harmonização de ambientes e fortalecimento da energia pessoal.</p>
+    </div>
+
+    <div class="card-body">
+
+      <div class="benefits-grid">
+        <div class="benefit-item">
+          <div class="benefit-check">
+            <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#4a8f42" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="benefit-text">Significado dos principais cristais</span>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-check">
+            <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#4a8f42" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="benefit-text">Como limpar e energizar cristais</span>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-check">
+            <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#4a8f42" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="benefit-text">Utilização para equilíbrio energético</span>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-check">
+            <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#4a8f42" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="benefit-text">Aplicações práticas no dia a dia</span>
+        </div>
+      </div>
+
+      <div class="price-area">
+        <div class="offer-label">✦ Oferta exclusiva para novos alunos ✦</div>
+      </div>
+
+      <a href="URL_DO_CHECKOUT_AQUI" class="cta-button">
+        <span>👉&nbsp; Quero acessar a Cristaloterapia</span>
+      </a>
+
+      <div class="attention-note">
+        <span>⚠️</span>
+        <span><strong>Atenção:</strong> Seu acesso ao material principal já foi enviado para o seu e-mail. Esta oferta é opcional e está disponível apenas nesta página.</span>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
